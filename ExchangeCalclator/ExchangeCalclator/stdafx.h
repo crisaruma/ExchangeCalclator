@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include "src/System/type.h"
+#include "src/System/CSystem.h"
 
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください
