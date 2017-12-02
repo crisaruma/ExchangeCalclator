@@ -116,22 +116,23 @@ void CSysData::SetAsStr(const char* _pVal)
 }
 
 
-const char* CSysData::GetAsStr(void)
+const char* CSysData::GetAsStr(void) const
 {
 	char buf[256];
 	switch (mType) 
 	{
 		case TypeSint32: {
 			sprintf_s(buf, "%d", mInt);
-			mStr = buf;
+			return buf;
 		}	break;
 
 		case TypeFloat: {
 			sprintf_s(buf, "%f", mFlt);
-			mStr = buf;
+			return buf;
 		}	break;
 	}
 	return mStr.c_str();
 }
+
 
 

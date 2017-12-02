@@ -206,8 +206,19 @@ public:
 		if (Ite == end()) {
 			return NULL;
 		}
-		return Ite->second;
+		return &(Ite->second);
 	}
+
+	const bool RemoveParam(const _KeyT& _key)
+	{
+		CIte Ite = find(_key);
+		if (Ite != end()) {
+			mMap.erase(Ite);
+			return true;
+		}
+		return false;
+	}
+
 };
 
 

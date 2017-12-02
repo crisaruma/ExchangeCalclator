@@ -42,7 +42,7 @@ public:
 	const float GetAsFlt(void) const;
 
 	void SetAsStr(const char* _pVal);
-	const char* GetAsStr(void);
+	const char* GetAsStr(void) const ;
 
 };
 
@@ -52,6 +52,8 @@ typedef CSysArray<CSysData>				CSysDataArray;
 
 typedef CSysMap<Sint32, CSysData>		CSysDataMap;
 typedef CSysMap<Sint32, CSysDataArray>	CSysDataTable;
+
+
 
 
 #endif

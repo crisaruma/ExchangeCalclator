@@ -36,6 +36,8 @@ public:
 
 	void Prepare(const Sint32& _argc, char* _argv[]);
 
+	const CSysDataArray* GetArg(const char* _pOpt);
+
 };
 
 

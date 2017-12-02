@@ -106,6 +106,21 @@ void CArg::Prepare(const Sint32& _argc, char* _argv[])
 
 
 
+//	
+const CSysDataArray* CArg::GetArg(const char* _pOpt)
+{
+	return mTable.GetParam(CHash::CRC32(_pOpt));
+}
+
+
+
+
+
+
+
+
+
+
 //======================================================================
 //	Class CHash
 //======================================================================

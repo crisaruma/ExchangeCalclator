@@ -11,6 +11,9 @@
     <Filter Include="Src\System">
       <UniqueIdentifier>{f7bc0386-5f26-410a-9f55-52c4ab172e64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Object">
+      <UniqueIdentifier>{0779adae-d955-4a3f-89b8-e96f31c25a13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -34,6 +37,15 @@
     <ClInclude Include="src\System\CSysArray.h">
       <Filter>Src\System</Filter>
     </ClInclude>
+    <ClInclude Include="src\System\CSysTable.h">
+      <Filter>Src\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Object\FCTradeLog.h">
+      <Filter>Src\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Object\FCTradeLogZaif.h">
+      <Filter>Src\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ExchangeCalclator.cpp">
@@ -50,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="src\System\CSysArray.cpp">
       <Filter>Src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\CSysTable.cpp">
+      <Filter>Src\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Object\FCTradeLog.cpp">
+      <Filter>Src\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Object\FCTradeLogZaif.cpp">
+      <Filter>Src\Object</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
