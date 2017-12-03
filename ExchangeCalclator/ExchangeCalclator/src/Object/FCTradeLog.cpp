@@ -209,6 +209,17 @@ const double FCTradeLog::FCTradeItem::GetAmount(const CSysDataMap* _pItem ) cons
 	return this->GetParamAsDbl(this->TypeHash_Amount(), _pItem);
 }
 
+//	“]‘——Ê‚Ì‘”‚ÌÝ’è/Žæ“¾
+void FCTradeLog::FCTradeItem::SetTransAmount(const double& _amount, CSysDataMap* _pItem ){
+	this->SetParamAsDbl(this->TypeHash_TransAmount(), _amount, _pItem);
+}
+
+const double FCTradeLog::FCTradeItem::GetTransAmount(const CSysDataMap* _pItem ) const
+{
+	return this->GetParamAsDbl(this->TypeHash_TransAmount(), _pItem);
+}
+
+
 //	ƒgƒŒ[ƒh“ú‚ÌÝ’è/Žæ“¾
 void FCTradeLog::FCTradeItem::SetDate(const Sint32& _date, CSysDataMap* _pItem )
 {
@@ -231,6 +242,23 @@ const Sint32 FCTradeLog::FCTradeItem::GetTime(const CSysDataMap* _pItem ) const
 	return this->GetParamAsInt(this->TypeHash_Time(), _pItem);
 }
 
+//	w“ü“ú‚ÌÝ’è/Žæ“¾
+void FCTradeLog::FCTradeItem::SetBuyDate(const Sint32& _date, CSysDataMap* _pItem) {
+	this->SetParamAsInt(this->TypeHash_BuyDate(), _date, _pItem);
+}
+
+const Sint32 FCTradeLog::FCTradeItem::GetBuyDate(const CSysDataMap* _pItem) const{
+	return this->GetParamAsInt(this->TypeHash_BuyDate(), _pItem);
+}
+
+//	w“üŽžŠÔ‚ÌÝ’è/Žæ“¾
+void FCTradeLog::FCTradeItem::SetBuyTime(const Sint32& _time, CSysDataMap* _pItem ) {
+	this->SetParamAsInt(this->TypeHash_BuyTime(), _time, _pItem);
+}
+
+const Sint32 FCTradeLog::FCTradeItem::GetBuyTime(const CSysDataMap* _pItem ) const{
+	return this->GetParamAsInt(this->TypeHash_BuyTime(), _pItem);
+}
 
 
 
@@ -311,6 +339,12 @@ void FCTradeLog::DoConvert(void) {
 bool FCTradeLog::DoCalclate(void) {
 	return true;
 }
+
+bool FCTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem::TradeType& _dst, FCTradeItem* _pTrade, CTradeArray* _pAry)
+{
+	return true;
+}
+
 
 //
 FCTradeLog::CTradeList* FCTradeLog::GetTradeList(const FCTradeItem::TradeType& _type)

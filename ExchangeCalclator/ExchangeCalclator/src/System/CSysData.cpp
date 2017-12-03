@@ -143,7 +143,7 @@ const double CSysData::GetAsDbl(void) const
 	}	break;
 
 	case TypeString: {
-		return atof(mStr.c_str());
+		return static_cast<double>(atof(mStr.c_str()) );
 	}	break;
 	}
 	return 0.0f;

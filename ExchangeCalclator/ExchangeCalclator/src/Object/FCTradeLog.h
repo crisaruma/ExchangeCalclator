@@ -25,6 +25,7 @@ public:
 				TradeTypeDeposit		,
 				TradeTypeWithdraw		,
 				TradeTypeExchange		,
+				TradeTypePool			,	//	送金による退避
 			};
 
 			enum CurrencyType {
@@ -49,8 +50,11 @@ public:
 			inline const Sint32 TypeHash_Currency(void) const { return CHash::CRC32("Currency"); }
 			inline const Sint32 TypeHash_Price(void) const { return CHash::CRC32("Price"); }
 			inline const Sint32 TypeHash_Amount(void) const { return CHash::CRC32("Amount"); }
+			inline const Sint32 TypeHash_TransAmount(void) const { return CHash::CRC32("TransAmount"); }	// 入出金数
 			inline const Sint32 TypeHash_Date(void) const { return CHash::CRC32("Date"); }
 			inline const Sint32 TypeHash_Time(void) const { return CHash::CRC32("Time"); }
+			inline const Sint32 TypeHash_BuyDate(void) const { return CHash::CRC32("BuyDate"); }	// 購入日時
+			inline const Sint32 TypeHash_BuyTime(void) const { return CHash::CRC32("BuyTime"); }	//
 			inline const Sint32 TypeHash_BuyPrice(void) const { return CHash::CRC32("CostPrice"); }	// 購入時価格
 			inline const Sint32 TypeHash_Margin(void) const { return CHash::CRC32("Margin"); }		// 取引差益
 			inline const Sint32 TypeHash_Market(void) const { return CHash::CRC32("Market"); }
@@ -97,6 +101,10 @@ public:
 			void SetAmount(const double& _amount , CSysDataMap* _pItem = NULL);
 			const double GetAmount(const CSysDataMap* _pItem = NULL) const;
 
+			//	転送量の総数の設定/取得
+			void SetTransAmount(const double& _amount, CSysDataMap* _pItem = NULL);
+			const double GetTransAmount(const CSysDataMap* _pItem = NULL) const;
+
 			//	トレード日の設定/取得
 			void SetDate(const Sint32& _date, CSysDataMap* _pItem = NULL);
 			const Sint32 GetDate(const CSysDataMap* _pItem = NULL) const;
@@ -104,6 +112,14 @@ public:
 			//	トレード時間の設定/取得
 			void SetTime(const Sint32& _time, CSysDataMap* _pItem = NULL);
 			const Sint32 GetTime(const CSysDataMap* _pItem = NULL) const;
+
+			//	購入日の設定/取得
+			void SetBuyDate(const Sint32& _date, CSysDataMap* _pItem = NULL);
+			const Sint32 GetBuyDate(const CSysDataMap* _pItem = NULL) const;
+
+			//	購入時間の設定/取得
+			void SetBuyTime(const Sint32& _time, CSysDataMap* _pItem = NULL);
+			const Sint32 GetBuyTime(const CSysDataMap* _pItem = NULL) const;
 
 
 	};
@@ -142,7 +158,8 @@ public:
 	//	CSVテーブルを買い/売りのリストにコンバートする
 	virtual void DoConvert(void);
 	virtual bool DoCalclate(void);
-	virtual bool DoSwap(void);
+
+	virtual bool DoSwap(const FCTradeItem::TradeType& _src , const FCTradeItem::TradeType& _dst , FCTradeItem* _pTrade , CTradeArray* _pAry );
 
 	virtual CTradeList* GetTradeList(const FCTradeItem::TradeType& _type);
 
