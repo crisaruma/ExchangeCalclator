@@ -60,8 +60,16 @@ public:
 
 	virtual void First(void);
 	virtual void Next(void);
-	virtual bool IsEof(void);
+	virtual bool IsEof(void) const ;
 
+	const Sint32 GetFieldIndex(const char* _pFieldName);
+	const char* GetFieldName(const Sint32& _FieldIndex);
+
+	CRecord* GetRecord(void);
+	const CRecord* GetRecord(void) const;
+
+	const CSysData* GetParam(const char* _pFieldName);
+	const CSysData* GetParam(const Sint32& _FieldIndex);
 
 };
 

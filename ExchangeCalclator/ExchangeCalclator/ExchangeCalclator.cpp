@@ -23,6 +23,9 @@ int main(int argc, char *argv[])
 	pLogMngr->DoInit();
 	pLogMngr->DoLoad( pInst->GetArg("-zaif") );
 
+	pLogMngr->DoConvert();
+	pLogMngr->DoCalclate();
+
 	pLogMngr->DoDump();
 
 	//CSysTable newCsv;
@@ -37,6 +40,8 @@ int main(int argc, char *argv[])
 
 	//	newCsv.Dump();
 	//}
+
+	pLogMngr->Finalize();
 
     return 0;
 }

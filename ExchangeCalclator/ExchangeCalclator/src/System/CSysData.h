@@ -15,19 +15,22 @@ public:
 		TypeInvalid = 0	,
 		TypeSint32	= 1	,
 		TypeFloat	= 2	,
-		TypeString	= 3	,
+		TypeDouble  = 3 ,
+		TypeString	= 4	,
 	};
 
 protected:
 	Type	mType;
 	Sint32	mInt;
-	float	mFlt;
+	double	mFlt;
 	string  mStr;
+	static string mTempStr;
 
 public:
 	CSysData();
 	CSysData(const Sint32& _val );
-	CSysData(const float& _val );
+	CSysData(const float& _val);
+	CSysData(const double& _val);
 	CSysData(const char* _pVal );
 
 	void Initialize(void);
@@ -40,6 +43,9 @@ public:
 
 	void SetAsFlt(const float& _val);
 	const float GetAsFlt(void) const;
+
+	void SetAsDbl(const double& _val);
+	const double GetAsDbl(void) const;
 
 	void SetAsStr(const char* _pVal);
 	const char* GetAsStr(void) const ;

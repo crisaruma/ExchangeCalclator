@@ -31,6 +31,16 @@ public:
 	virtual const char* GetRegistKey(void) { return "CTradeLogZaif"; }
 	virtual const Sint32 GetRegistID(void) { return CHash::CRC32(GetRegistKey()); }
 
+
+	virtual const Sint32 ConvertDate(const CSysData* _pDateTime );
+	virtual const Sint32 ConVertTime(const CSysData* _pDateTime );
+
+	virtual void Dump(void);
+
+	//	CSVテーブルを買い/売りのリストにコンバートする
+	virtual void DoConvert(void);
+	virtual bool DoCalclate(void);
+
 };
 
 

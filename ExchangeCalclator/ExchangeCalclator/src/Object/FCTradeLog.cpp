@@ -4,7 +4,239 @@
 
 
 
+//====================================================================================
 //	取引履歴解析用
+//====================================================================================
+
+//====================================================================================
+//	トレード情報
+FCTradeLog::FCTradeItem::FCTradeItem()
+: mParam()
+{
+}
+
+FCTradeLog::FCTradeItem::FCTradeItem(const CSysDataMap& _param)
+: mParam(_param)
+{
+}
+
+
+FCTradeLog::FCTradeItem::~FCTradeItem()
+{
+	Finalize();
+}
+
+
+void FCTradeLog::FCTradeItem::Initialize(void) 
+{
+	mParam.Initialize();
+}
+
+void FCTradeLog::FCTradeItem::Finalize(void) 
+{
+	mParam.Finalize();
+}
+
+
+//	
+void FCTradeLog::FCTradeItem::SetParamAsStr(const Sint32& _hash, const char* _pStr, CSysDataMap* _pItem ) 
+{
+	CSysData* pType = NULL;
+	if (_pItem) {
+		pType = _pItem->GetParam(_hash);
+	}
+	else {
+		pType = mParam.GetParam(_hash);
+	}
+	pType->SetAsStr(_pStr ? _pStr : "" );
+}
+
+
+const char* FCTradeLog::FCTradeItem::GetParamAsStr(const Sint32& _hash, const CSysDataMap* _pItem ) const 
+{
+	const CSysData* pType = NULL;
+	if (_pItem) {
+		pType = _pItem->GetParam(_hash);
+	}
+	else {
+		pType = mParam.GetParam(_hash);
+	}
+	if (!pType) {
+		return NULL;
+	}
+	return pType->GetAsStr();
+}
+
+
+//	
+void FCTradeLog::FCTradeItem::SetParamAsInt(const Sint32& _hash, const Sint32& _param, CSysDataMap* _pItem )
+{
+	CSysData* pType = NULL;
+	if (_pItem) {
+		pType = _pItem->GetParam(_hash );
+	}
+	else {
+		pType = mParam.GetParam(_hash );
+	}
+	pType->SetAsInt(_param);
+}
+
+
+//	
+const Sint32 FCTradeLog::FCTradeItem::GetParamAsInt(const Sint32& _hash, const CSysDataMap* _pItem ) const 
+{
+	const CSysData* pType = NULL;
+	if (_pItem) {
+		pType = _pItem->GetParam(_hash);
+	}
+	else {
+		pType = mParam.GetParam(_hash);
+	}
+	if (!pType) {
+		return TradeTypeInvalid;
+	}
+	return pType->GetAsInt();
+}
+
+void FCTradeLog::FCTradeItem::SetParamAsDbl(const Sint32& _hash, const double& _param, CSysDataMap* _pItem ) 
+{
+	CSysData* pType = NULL;
+	if (_pItem) {
+		pType = _pItem->GetParam(_hash);
+	}
+	else {
+		pType = mParam.GetParam(_hash);
+	}
+	pType->SetAsDbl(_param);
+}
+
+const double FCTradeLog::FCTradeItem::GetParamAsDbl(const Sint32& _hash, const CSysDataMap* _pItem ) const {
+	const CSysData* pType = NULL;
+	if (_pItem) {
+		pType = _pItem->GetParam(_hash);
+	}
+	else {
+		pType = mParam.GetParam(_hash);
+	}
+	if (!pType) {
+		return TradeTypeInvalid;
+	}
+	return pType->GetAsDbl();
+}
+
+
+//	マーケット名の設定/取得
+void FCTradeLog::FCTradeItem::SetMarket(const char* _pStr , CSysDataMap* _pItem ) 
+{
+	this->SetParamAsStr(this->TypeHash_Market(), _pStr, _pItem);
+}
+
+const char* FCTradeLog::FCTradeItem::GetMarket(const CSysDataMap* _pItem ) const
+{
+	return this->GetParamAsStr(this->TypeHash_Market(), _pItem);
+}
+
+
+//	トレードタイプの設定/取得
+void FCTradeLog::FCTradeItem::SetType(const FCTradeLog::FCTradeItem::TradeType& _type, CSysDataMap* _pItem ){
+	this->SetParamAsInt(this->TypeHash_Type(), _type, _pItem);
+}
+
+const FCTradeLog::FCTradeItem::TradeType FCTradeLog::FCTradeItem::GetType(const CSysDataMap* _pItem ) const{
+	return static_cast<TradeType>(this->GetParamAsInt(this->TypeHash_Type(), _pItem) );
+}
+
+
+//	トレード通貨種別の設定/取得
+void FCTradeLog::FCTradeItem::SetCurrency(const CurrencyType& _type, CSysDataMap* _pItem ) {
+	this->SetParamAsInt(this->TypeHash_Currency(), _type, _pItem);
+}
+
+const FCTradeLog::FCTradeItem::CurrencyType FCTradeLog::FCTradeItem::GetCurrency(const CSysDataMap* _pItem ) const {
+	return static_cast<CurrencyType>(this->GetParamAsInt(this->TypeHash_Currency(), _pItem));
+}
+
+//	トレード価格の設定/取得
+void FCTradeLog::FCTradeItem::SetPrice(const double& _price, CSysDataMap* _pItem ) {
+	this->SetParamAsDbl(this->TypeHash_Price(), _price, _pItem);
+}
+
+const double FCTradeLog::FCTradeItem::GetPrice(const CSysDataMap* _pItem ) const {
+	return this->GetParamAsDbl(this->TypeHash_Price(), _pItem);
+}
+
+//	購入時の価格の設定/取得
+void FCTradeLog::FCTradeItem::SetCost(const double& _price, CSysDataMap* _pItem ) 
+{
+	this->SetParamAsDbl(this->TypeHash_BuyPrice(), _price, _pItem);
+}
+
+const double FCTradeLog::FCTradeItem::GetCost(const CSysDataMap* _pItem ) const 
+{
+	return this->GetParamAsDbl(this->TypeHash_BuyPrice(), _pItem);
+}
+
+//	手数料
+void FCTradeLog::FCTradeItem::SetFee(const double& _price, CSysDataMap* _pItem ) 
+{
+	this->SetParamAsDbl(this->TypeHash_Fee(), _price, _pItem);
+}
+
+const double FCTradeLog::FCTradeItem::GetFee(const CSysDataMap* _pItem) const
+{
+	return this->GetParamAsDbl(this->TypeHash_Fee(), _pItem);
+}
+
+
+//	トレード価格の設定/取得
+void FCTradeLog::FCTradeItem::SetMargin(const double& _price, CSysDataMap* _pItem) {
+	this->SetParamAsDbl(this->TypeHash_Margin(), _price, _pItem);
+}
+
+const double FCTradeLog::FCTradeItem::GetMargin(const CSysDataMap* _pItem ) const
+{
+	return this->GetParamAsDbl(this->TypeHash_Margin(), _pItem);
+}
+
+
+//	トレード数量の設定/取得
+void FCTradeLog::FCTradeItem::SetAmount(const double& _amount, CSysDataMap* _pItem ) {
+	this->SetParamAsDbl(this->TypeHash_Amount(), _amount, _pItem);
+}
+
+
+const double FCTradeLog::FCTradeItem::GetAmount(const CSysDataMap* _pItem ) const {
+	return this->GetParamAsDbl(this->TypeHash_Amount(), _pItem);
+}
+
+//	トレード日の設定/取得
+void FCTradeLog::FCTradeItem::SetDate(const Sint32& _date, CSysDataMap* _pItem )
+{
+	this->SetParamAsInt(this->TypeHash_Date(), _date, _pItem);
+}
+
+const Sint32 FCTradeLog::FCTradeItem::GetDate(const CSysDataMap* _pItem ) const
+{
+	return this->GetParamAsInt(this->TypeHash_Date(), _pItem);
+}
+
+//	トレード時間の設定/取得
+void FCTradeLog::FCTradeItem::SetTime(const Sint32& _time, CSysDataMap* _pItem )
+{
+	this->SetParamAsInt(this->TypeHash_Time(), _time, _pItem);
+}
+
+const Sint32 FCTradeLog::FCTradeItem::GetTime(const CSysDataMap* _pItem ) const
+{
+	return this->GetParamAsInt(this->TypeHash_Time(), _pItem);
+}
+
+
+
+
+
+//====================================================================================
+//	トレードオブジェクト
 FCTradeLog* FCTradeLog::Create(void) {
 	return new FCTradeLog();
 }
@@ -13,6 +245,7 @@ FCTradeLog* FCTradeLog::Create(void) {
 FCTradeLog::FCTradeLog()
 : FClsTable()
 , mThis(this)
+, mTradeTable()
 {
 	mThis->RegistManager();
 }
@@ -28,6 +261,7 @@ FCTradeLog::~FCTradeLog()
 void FCTradeLog::Initialize(void)
 {
 	FClsTable::Initialize();
+	mTradeTable.Initialize();
 }
 
 
@@ -35,10 +269,15 @@ void FCTradeLog::Initialize(void)
 void FCTradeLog::Finalize(void)
 {
 	FClsTable::Finalize();
+	mTradeTable.Finalize();
+}
+
+bool FCTradeLog::Destroy(void)
+{
 	if (mThis) {
 		delete mThis;
 	}
-	mThis = NULL;
+	return true;
 }
 
 
@@ -65,6 +304,19 @@ void FCTradeLog::RemoveManager(void)
 }
 
 
+//	CSVテーブルを買い/売りのリストにコンバートする
+void FCTradeLog::DoConvert(void) {
+}
+
+bool FCTradeLog::DoCalclate(void) {
+	return true;
+}
+
+//
+FCTradeLog::CTradeList* FCTradeLog::GetTradeList(const FCTradeItem::TradeType& _type)
+{
+	return mTradeTable.GetParam(_type);
+}
 
 
 
@@ -110,7 +362,7 @@ void FCTradeLogManager::Initialize(void)
 
 void FCTradeLogManager::Finalize(void) 
 {
-	mLogTable.Finalize();
+	this->Release();
 }
 
 
@@ -125,6 +377,18 @@ bool FCTradeLogManager::Regist(FCTradeLog* _pInst)
 bool FCTradeLogManager::Remove(FCTradeLog* _pInst)
 {
 	mLogTable.RemoveParam(_pInst->GetRegistID());
+	return true;
+}
+
+//	
+bool FCTradeLogManager::Release(void)
+{
+	CLogTable::CIte IteTbl = mLogTable.begin();
+	while (IteTbl != mLogTable.end()){
+		IteTbl->second->Destroy();
+		IteTbl = mLogTable.begin();
+	}
+	mLogTable.Finalize();
 	return true;
 }
 
@@ -177,12 +441,34 @@ bool FCTradeLogManager::DoLoad( const CSysDataArray* _pAry )
 }
 
 
+void FCTradeLogManager::DoConvert(void)
+{
+	CLogTable::CIte IteLog = mLogTable.begin();
+	for (; IteLog != mLogTable.end(); IteLog++) 
+	{
+		IteLog->second->DoConvert();
+	}
+}
+
+
+//	取引計算を行う
+void FCTradeLogManager::DoCalclate(void)
+{
+	CLogTable::CIte IteLog = mLogTable.begin();
+	for (; IteLog != mLogTable.end(); IteLog++)
+	{
+		IteLog->second->DoCalclate();
+	}
+}
+
 
 //	
 void FCTradeLogManager::DoDump(void) 
 {
 	CLogTable::CIte IteLog = mLogTable.begin();
-	for (; IteLog != mLogTable.end(); IteLog++) {
+	for (; IteLog != mLogTable.end(); IteLog++) 
+	{
 		IteLog->second->Dump();
 	}
 }
+

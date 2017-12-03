@@ -3,6 +3,7 @@
 #include "CSysData.h"
 
 
+string CSysData::mTempStr="";
 
 //	汎用パラメータ
 CSysData::CSysData()
@@ -28,6 +29,15 @@ CSysData::CSysData(const float& _val)
 , mStr()
 {
 }
+
+CSysData::CSysData(const double& _val)
+: mType(TypeDouble)
+, mInt(0)
+, mFlt(_val)
+, mStr()
+{
+}
+
 
 CSysData::CSysData(const char* _pVal)
 : mType(TypeString)
@@ -73,7 +83,9 @@ const Sint32 CSysData::GetAsInt(void) const
 			return mInt;
 		}	break;
 
-		case TypeFloat:{
+		case TypeFloat:
+		case TypeDouble:
+		{
 			return static_cast<Sint32>(mFlt);
 		}	break;
 
@@ -97,8 +109,10 @@ const float CSysData::GetAsFlt(void) const
 		return static_cast<float>(mInt);
 	}	break;
 
-	case TypeFloat: {
-		return mFlt;
+	case TypeFloat: 
+	case TypeDouble:
+	{
+		return static_cast<float>(mFlt);
 	}	break;
 
 	case TypeString: {
@@ -107,6 +121,34 @@ const float CSysData::GetAsFlt(void) const
 	}
 	return 0.0f;
 }
+
+
+void CSysData::SetAsDbl(const double& _val) 
+{
+	mFlt = _val;
+	mType = TypeFloat;
+}
+
+const double CSysData::GetAsDbl(void) const 
+{
+	switch (mType) {
+	case TypeSint32: {
+		return static_cast<double>(mInt);
+	}	break;
+
+	case TypeFloat: 
+	case TypeDouble:
+	{
+		return mFlt;
+	}	break;
+
+	case TypeString: {
+		return atof(mStr.c_str());
+	}	break;
+	}
+	return 0.0f;
+}
+
 
 
 void CSysData::SetAsStr(const char* _pVal)
@@ -123,12 +165,16 @@ const char* CSysData::GetAsStr(void) const
 	{
 		case TypeSint32: {
 			sprintf_s(buf, "%d", mInt);
-			return buf;
+			mTempStr = buf;
+			return mTempStr.c_str();
 		}	break;
 
-		case TypeFloat: {
+		case TypeFloat: 
+		case TypeDouble:
+		{
 			sprintf_s(buf, "%f", mFlt);
-			return buf;
+			mTempStr = buf;
+			return mTempStr.c_str();
 		}	break;
 	}
 	return mStr.c_str();

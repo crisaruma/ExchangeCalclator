@@ -102,7 +102,7 @@ public:
 	}
 
 	void RemoveParam(const Sint32 _index) {
-		mArray.erase(mArray.begin() + _index )
+		mArray.erase(mArray.begin() + _index);
 	}
 
 };
@@ -191,6 +191,14 @@ public:
 			return pRet;
 		}
 		return AddParam(_key, _ValT());
+	}
+
+	const _ValT* GetParam(const _KeyT& _key) const {
+		const _ValT* pRet = SearchParam(_key);
+		if (pRet) {
+			return pRet;
+		}
+		return NULL;
 	}
 
 	_ValT* SearchParam(const _KeyT& _key) {

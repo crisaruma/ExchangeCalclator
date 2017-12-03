@@ -204,9 +204,63 @@ void CSysTable::Next(void) {
 }
 
 
-bool CSysTable::IsEof(void) {
+bool CSysTable::IsEof(void) const {
 	if (mCurrent == mTable.end()) {
 		return true;
 	}
 	return false;
+}
+
+
+//	
+const Sint32 CSysTable::GetFieldIndex(const char* _pFieldName){
+	const Sint32* pIndex = mIndex.SearchParam(CHash::CRC32(_pFieldName));
+	if (!pIndex) {
+		return -1;
+	}
+	return (*pIndex);
+}
+
+//	フィールドのラベルを取得する
+const char* CSysTable::GetFieldName(const Sint32& _FieldIndex ) {
+	const CSysData* pData = mLabel.GetField(_FieldIndex); 
+	if (!pData) {
+		return NULL;
+	}
+	return pData->GetAsStr();
+}
+
+
+CSysTable::CRecord* CSysTable::GetRecord(void)
+{
+	if (IsEof()) {
+		return NULL;
+	}
+	return &(mCurrent->second);
+}
+
+const CSysTable::CRecord* CSysTable::GetRecord(void) const
+{
+	if (IsEof()) {
+		return NULL;
+	}
+	return &(mCurrent->second);
+}
+
+
+const CSysData* CSysTable::GetParam(const char* _pFieldName)
+{
+	const Sint32* pIndex = mIndex.SearchParam(CHash::CRC32(_pFieldName));
+	if (!pIndex) {
+		return NULL;
+	}
+	return this->GetParam(*pIndex);
+}
+
+const CSysData* CSysTable::GetParam(const Sint32& _FieldIndex)
+{
+	if (IsEof()) {
+		return NULL;
+	}
+	return mCurrent->second.GetField(_FieldIndex);
 }
