@@ -135,18 +135,21 @@ protected:
 	CTradeTable	mTradeTable;
 
 public:
-	static FCTradeLog* Create(void);
+	static FCTradeLog* Create(void){
+		return new FCTradeLog();
+	}
 
 	FCTradeLog();
+	FCTradeLog( FCTradeLog* _pInst );
 	~FCTradeLog();
 
 	virtual void Initialize(void);
 	virtual void Finalize(void);
 	virtual bool Destroy(void);
 
-	virtual const char* GetOptionWord(void) { return "-sample";}
-	virtual const char* GetRegistKey(void) { return "Sample";  }
-	virtual const Sint32 GetRegistID(void) { return CHash::CRC32( GetRegistKey() ); }
+	virtual const char* GetOptionWord(void) { return NULL;}
+	virtual const char* GetRegistKey(void) { return NULL; }
+	virtual const Sint32 GetRegistID(void) { return CHash::CRC32( this->GetRegistKey() ); }
 
 	virtual void RegistManager(void);
 	virtual void RemoveManager(void);
@@ -199,6 +202,8 @@ public:
 	virtual void DoCalclate(void);
 
 	virtual void DoDump(void);
+
+	virtual FCTradeLog* GetTradeLog(const char* pName);
 
 };
 

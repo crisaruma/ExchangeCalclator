@@ -8,9 +8,8 @@
 
 #include "FCTradeLog.h"
 
-
-
-//	ザイフの入金履歴解析
+//============================================================================================================
+//	ザイフベース
 class CZaifBase : public FCTradeLog
 {
 public:
@@ -18,6 +17,7 @@ public:
 
 public:
 	CZaifBase();
+	CZaifBase(FCTradeLog* _pInst);
 	virtual ~CZaifBase();
 
 	virtual void Initialize(void);
@@ -25,7 +25,6 @@ public:
 
 	virtual const char* GetOptionWord(void) { return "-zaifbase"; }
 	virtual const char* GetRegistKey(void) { return "CZaifBase"; }
-	virtual const Sint32 GetRegistID(void) { return CHash::CRC32(GetRegistKey()); }
 
 
 	virtual const Sint32 ConvertDate(const CSysData* _pDateTime);
@@ -33,9 +32,64 @@ public:
 
 };
 
+//============================================================================================================
+//	ザイフの入金履歴解析
+class CZaifDepositLog : public CZaifBase 
+{
+public:
+	typedef CZaifBase	FClsBase;
 
+protected:
+public:
+	static CZaifDepositLog* Create(void) {
+		CZaifDepositLog* pInst = new CZaifDepositLog();
+		pInst->RegistManager();
+		return pInst;
+	}
+
+	CZaifDepositLog();
+	CZaifDepositLog(FCTradeLog* _pInst);
+	virtual ~CZaifDepositLog();
+
+	virtual void Initialize(void);
+	virtual void Finalize(void);
+
+	virtual const char* GetOptionWord(void) { return "-zaifdepo"; }
+	virtual const char* GetRegistKey(void) { return "CZaifDepositLog";  }
+};
+
+
+//============================================================================================================
+//	ザイフの出金履歴解析
+class CZaifWithdrawLog : public CZaifBase
+{
+public:
+	typedef CZaifBase	FClsBase;
+
+protected:
+public:
+	static CZaifWithdrawLog* Create(void) {
+		CZaifWithdrawLog* pInst = new CZaifWithdrawLog();
+		pInst->RegistManager();
+		return pInst;
+	}
+
+	CZaifWithdrawLog();
+	CZaifWithdrawLog(FCTradeLog* _pInst);
+	virtual ~CZaifWithdrawLog();
+
+	virtual void Initialize(void);
+	virtual void Finalize(void);
+
+	virtual const char* GetOptionWord(void) { return "-zaifdraw"; }
+	virtual const char* GetRegistKey(void) { return "CZaifWithdrawLog"; }
+};
+
+
+
+//============================================================================================================
 //	ザイフの取引履歴解析
-class CTradeLogZaif : public CZaifBase
+class CZaifTradeLog : public CZaifBase
 {
 public:
 	typedef CZaifBase	FClsBase;
@@ -43,17 +97,21 @@ public:
 protected:
 
 public:
-	static CTradeLogZaif* Create(void);
+	static CZaifTradeLog* Create(void){
+		CZaifTradeLog* pInst = new CZaifTradeLog();
+		pInst->RegistManager();
+		return pInst;
+	}
 
-	CTradeLogZaif();
-	virtual ~CTradeLogZaif();
+	CZaifTradeLog();
+	CZaifTradeLog(FCTradeLog* _pInst);
+	virtual ~CZaifTradeLog();
 
 	virtual void Initialize(void);
 	virtual void Finalize(void);
 
 	virtual const char* GetOptionWord(void) { return "-zaif"; }
-	virtual const char* GetRegistKey(void) { return "CTradeLogZaif"; }
-	virtual const Sint32 GetRegistID(void) { return CHash::CRC32(GetRegistKey()); }
+	virtual const char* GetRegistKey(void) { return "CZaifTradeLog"; }
 
 
 	virtual void Dump(void);
@@ -63,6 +121,9 @@ public:
 	virtual bool DoCalclate(void);
 
 	virtual bool DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem::TradeType& _dst, FCTradeItem* _pTrade, CTradeArray* _pAry);
+
+	virtual bool DoImportDepositTable(FCTradeLog* _pTbl);
+	virtual bool DoImportWithdrawTable(FCTradeLog* _pTbl);
 
 };
 

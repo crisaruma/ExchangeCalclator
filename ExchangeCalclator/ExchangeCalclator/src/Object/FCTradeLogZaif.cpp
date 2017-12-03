@@ -10,9 +10,15 @@
 
 
 
+//============================================================================================================
 //	ザイフベース
 CZaifBase::CZaifBase()
-: FClsBase()
+: FClsBase(this)
+{
+}
+
+CZaifBase::CZaifBase(FCTradeLog* _pInst)
+: FClsBase(_pInst)
 {
 }
 
@@ -90,32 +96,89 @@ const Sint32 CZaifBase::ConVertTime(const CSysData* _pDateTime)
 
 
 
+//============================================================================================================
+//	ザイフの入金履歴解析
+CZaifDepositLog::CZaifDepositLog()
+: FClsBase(this)
+{
+}
 
+CZaifDepositLog::CZaifDepositLog(FCTradeLog* _pInst)
+: FClsBase(_pInst)
+{
+}
+
+CZaifDepositLog::~CZaifDepositLog(){
+	Finalize();
+}
+
+void CZaifDepositLog::Initialize(void){
+	FClsBase::Initialize();
+}
+
+void CZaifDepositLog::Finalize(void){
+	FClsBase::Finalize();
+}
+
+
+
+
+//============================================================================================================
+//	ザイフの出金履歴解析
+CZaifWithdrawLog::CZaifWithdrawLog()
+: FClsBase(this)
+{
+}
+
+CZaifWithdrawLog::CZaifWithdrawLog(FCTradeLog* _pInst)
+: FClsBase(_pInst)
+{
+}
+
+CZaifWithdrawLog::~CZaifWithdrawLog()
+{
+	Finalize();
+}
+
+void CZaifWithdrawLog::Initialize(void)
+{
+	FClsBase::Initialize();
+}
+
+void CZaifWithdrawLog::Finalize(void)
+{
+	FClsBase::Finalize();
+}
+
+
+
+
+
+//============================================================================================================
 //	ザイフの取引履歴解析
-CTradeLogZaif* CTradeLogZaif::Create(void)
-{
-	return new CTradeLogZaif();
-}
-
-
-CTradeLogZaif::CTradeLogZaif()
-: FClsBase()
+CZaifTradeLog::CZaifTradeLog() 
+: FClsBase(this)
 {
 }
 
+CZaifTradeLog::CZaifTradeLog(FCTradeLog* _pInst)
+: FClsBase(_pInst)
+{
+}
 
-CTradeLogZaif::~CTradeLogZaif()
+
+CZaifTradeLog::~CZaifTradeLog()
 {
 	Finalize();
 }
 
 
-void CTradeLogZaif::Initialize(void)
+void CZaifTradeLog::Initialize(void)
 {
 	FClsBase::Initialize();
 }
 
-void CTradeLogZaif::Finalize(void)
+void CZaifTradeLog::Finalize(void)
 {
 	FClsBase::Finalize();
 }
@@ -123,7 +186,7 @@ void CTradeLogZaif::Finalize(void)
 
 
 //	
-void CTradeLogZaif::Dump(void) 
+void CZaifTradeLog::Dump(void) 
 {
 	CTradeList* pExchange = this->GetTradeList(FCTradeItem::TradeTypeExchange);
 	string stream;
@@ -235,8 +298,11 @@ void CTradeLogZaif::Dump(void)
 
 
 //	CSVテーブルを買い/売りのリストにコンバートする
-void CTradeLogZaif::DoConvert(void)
+void CZaifTradeLog::DoConvert(void)
 {
+	this->DoImportWithdrawTable( FCTradeLogManager::GetInstance()->GetTradeLog("CZaifWithdrawLog"));
+	this->DoImportDepositTable( FCTradeLogManager::GetInstance()->GetTradeLog("CZaifDepositLog"));
+
 	mTradeTable.Initialize();
 
 	CSysIntMap typeTrade;
@@ -305,7 +371,7 @@ void CTradeLogZaif::DoConvert(void)
 
 
 //	
-bool CTradeLogZaif::DoCalclate(void)
+bool CZaifTradeLog::DoCalclate(void)
 {
 	CTradeList* pTradeListAll = this->GetTradeList(FCTradeItem::TradeTypeAll);
 	if (!pTradeListAll) {
@@ -442,7 +508,7 @@ bool CTradeLogZaif::DoCalclate(void)
 
 
 
-bool CTradeLogZaif::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem::TradeType& _dst, FCTradeItem* _pTrade, CTradeArray* _pAry)
+bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem::TradeType& _dst, FCTradeItem* _pTrade, CTradeArray* _pAry)
 {
 	if (!_pTrade) {
 		return false;
@@ -570,8 +636,62 @@ bool CTradeLogZaif::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 
 
 
+//	入金ログを取り込み
+bool CZaifTradeLog::DoImportDepositTable(FCTradeLog* _pTbl)
+{
+//	日時:2017-11-30 05:28:15.552586
+//	TX: 0e35407b9e3d72e1d38daeef803db0cf31956656ac11290a9a9d471fc9b62530
+//	金額 : 0.00974589
+	CSysData typeDeposit("入金");
+
+	for (_pTbl->First(); !_pTbl->IsEof(); _pTbl->Next())
+	{
+		const CSysData* pDate = _pTbl->GetParam("日時");
+		const CSysData* pPrice = _pTbl->GetParam("金額");
+
+		if (!pDate || !pPrice) {
+			continue;
+		}
+
+		if (this->CreateRecord())
+		{
+			this->SetParam("日時", ConvertDate(pDate));
+			this->SetParam("価格", *pPrice);
+			this->SetParam("取引種別", typeDeposit );
+		}
+	}
+	return true;
+}
 
 
+//	出金ログを取り込み
+bool CZaifTradeLog::DoImportWithdrawTable(FCTradeLog* _pTbl)
+{
+	//	日時:2017-11-30 05:28:15.552586
+	//	TX: 0e35407b9e3d72e1d38daeef803db0cf31956656ac11290a9a9d471fc9b62530
+	//	金額 : 0.00974589
+	CSysData typeDeposit("送金");
+
+	for (_pTbl->First(); !_pTbl->IsEof(); _pTbl->Next())
+	{
+		const CSysData* pDate = _pTbl->GetParam("日時");
+		const CSysData* pPrice = _pTbl->GetParam("金額");
+		const CSysData* pTxFee = _pTbl->GetParam("手数料");
+
+		if (!pDate || !pPrice || !pTxFee ){
+			continue;
+		}
+
+		if (this->CreateRecord())
+		{
+			this->SetParam("日時", ConvertDate(pDate));
+			this->SetParam("価格", *pPrice);
+			this->SetParam("取引種別", typeDeposit);
+			this->SetParam("取引手数料", *pTxFee );
+		}
+	}
+	return true;
+}
 
 
 

@@ -17,29 +17,21 @@ int main(int argc, char *argv[])
 
 	CArg* pInst = CArg::GetInstance();
 
-	CTradeLogZaif::Create();
+	CZaifWithdrawLog::Create();
+	CZaifDepositLog::Create();
+	CZaifTradeLog::Create();
 
 	FCTradeLogManager* pLogMngr = FCTradeLogManager::GetInstance();
 	pLogMngr->DoInit();
-	pLogMngr->DoLoad( pInst->GetArg("-zaif") );
+
+	pLogMngr->DoLoad(pInst->GetArg("-zaifdraw"));	// o‹à—š—ð
+	pLogMngr->DoLoad(pInst->GetArg("-zaifdepo"));	// “ü‹à—š—ð
+	pLogMngr->DoLoad(pInst->GetArg("-zaif"));		// Žæˆø—š—ð
 
 	pLogMngr->DoConvert();
 	pLogMngr->DoCalclate();
 
 	pLogMngr->DoDump();
-
-	//CSysTable newCsv;
-	//const CSysDataArray* pZaif = pInst->GetArg("-zaif");
-	//if (pZaif) {
-
-	//	CSysDataArray::CIteConst IteZaif = pZaif->begin()+1;
-	//	for (; IteZaif != pZaif->end() ; IteZaif++)
-	//	{
-	//		newCsv.LoadCsv(IteZaif->GetAsStr() );
-	//	}
-
-	//	newCsv.Dump();
-	//}
 
 	pLogMngr->Finalize();
 

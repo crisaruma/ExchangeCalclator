@@ -26,6 +26,7 @@ public:
 			void Finalize(void);
 
 			void AddParam(const CSysData& _param);
+			void SetParam(const Sint32& _index , const CSysData& _param);
 
 			bool Assign(const char* _pCsv);
 
@@ -65,8 +66,13 @@ public:
 	const Sint32 GetFieldIndex(const char* _pFieldName);
 	const char* GetFieldName(const Sint32& _FieldIndex);
 
+	CRecord* CreateRecord(void);
 	CRecord* GetRecord(void);
 	const CRecord* GetRecord(void) const;
+
+	//	
+	const bool SetParam(const char* _pFieldName, const CSysData& _dat);
+	const bool SetParam(const Sint32& _FieldIndex , const CSysData& _dat);
 
 	const CSysData* GetParam(const char* _pFieldName);
 	const CSysData* GetParam(const Sint32& _FieldIndex);

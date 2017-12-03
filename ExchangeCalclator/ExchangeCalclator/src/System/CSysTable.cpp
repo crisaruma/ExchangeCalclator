@@ -35,6 +35,16 @@ void CSysTable::CRecord::AddParam(const CSysData& _param)
 	mParam.AddParam(mParam.count(), _param);
 }
 
+//	
+void CSysTable::CRecord::SetParam(const Sint32& _index, const CSysData& _param)
+{
+	CSysData* pParam = mParam.SearchParam(_index);
+	if (!pParam) {
+		return;
+	}
+	*pParam = _param;
+}
+
 
 //	CSV形式で、パラメータを設定する
 bool CSysTable::CRecord::Assign(const char* _pCsv)
@@ -231,6 +241,25 @@ const char* CSysTable::GetFieldName(const Sint32& _FieldIndex ) {
 }
 
 
+//	最後尾に新規レコードを作成する
+CSysTable::CRecord* CSysTable::CreateRecord(void) 
+{
+	const Sint32 newIndex = mTable.count();
+	CRecord* pRecord = mTable.GetParam(newIndex);
+	if (!pRecord) {
+		return NULL;
+	}
+
+	CSysIntMap::CIte IteIndex = mIndex.begin();
+	for (; IteIndex != mIndex.end(); IteIndex++) 
+	{
+		pRecord->AddParam(0);
+	}
+	mCurrent = mTable.find(newIndex);
+	return pRecord;
+}
+
+
 CSysTable::CRecord* CSysTable::GetRecord(void)
 {
 	if (IsEof()) {
@@ -247,6 +276,28 @@ const CSysTable::CRecord* CSysTable::GetRecord(void) const
 	return &(mCurrent->second);
 }
 
+//	フィールドパラメータの設定
+const bool CSysTable::SetParam(const char* _pFieldName, const CSysData& _dat)
+{
+	const Sint32* pIndex = mIndex.SearchParam(CHash::CRC32(_pFieldName));
+	if (!pIndex) {
+		return NULL;
+	}
+	return this->SetParam(*pIndex,_dat);
+}
+
+const bool CSysTable::SetParam(const Sint32& _FieldIndex, const CSysData& _dat)
+{
+	if (IsEof()) {
+		return false;
+	}
+	CSysData* pDat = mCurrent->second.GetField(_FieldIndex);
+	if (!pDat) {
+		return false;
+	}
+	*pDat = _dat;
+	return true;
+}
 
 const CSysData* CSysTable::GetParam(const char* _pFieldName)
 {

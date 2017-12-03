@@ -265,23 +265,23 @@ const Sint32 FCTradeLog::FCTradeItem::GetBuyTime(const CSysDataMap* _pItem ) con
 
 //====================================================================================
 //	トレードオブジェクト
-FCTradeLog* FCTradeLog::Create(void) {
-	return new FCTradeLog();
-}
-
-
 FCTradeLog::FCTradeLog()
 : FClsTable()
 , mThis(this)
 , mTradeTable()
 {
-	mThis->RegistManager();
+}
+
+FCTradeLog::FCTradeLog(FCTradeLog* _pInst)
+: FClsTable()
+, mThis(_pInst )
+, mTradeTable()
+{
 }
 
 
 FCTradeLog::~FCTradeLog()
 {
-	mThis->RemoveManager();
 	Finalize();
 }
 
@@ -303,6 +303,7 @@ void FCTradeLog::Finalize(void)
 bool FCTradeLog::Destroy(void)
 {
 	if (mThis) {
+		mThis->RemoveManager();
 		delete mThis;
 	}
 	return true;
@@ -471,6 +472,8 @@ bool FCTradeLogManager::DoLoad( const CSysDataArray* _pAry )
 			}
 		}
 	}
+
+	this->DoDump();
 	return true;
 }
 
@@ -506,3 +509,17 @@ void FCTradeLogManager::DoDump(void)
 	}
 }
 
+
+//	
+FCTradeLog* FCTradeLogManager::GetTradeLog(const char* pName)
+{
+	const Sint32 hashRegistID = CHash::CRC32(pName);
+
+	CLogTable::CIte IteLog = mLogTable.begin();
+	for (; IteLog != mLogTable.end(); IteLog++ ){
+		if (hashRegistID == IteLog->second->GetRegistID()){
+			return IteLog->second;
+		}
+	}
+	return NULL;
+}
