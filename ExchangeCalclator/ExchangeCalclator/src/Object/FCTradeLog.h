@@ -128,6 +128,7 @@ public:
 
 			//	åàçœäzÇåvéZÇ∑ÇÈ
 			void CalclatePayment(void);
+			bool ConvertDate(string& _result, const Sint32& _dateValue, const Sint32& _timeValue);
 	};
 
 	typedef CSysArray<FCTradeItem>						CTradeArray;
@@ -172,6 +173,7 @@ public:
 
 	virtual CTradeList* GetTradeList(const FCTradeItem::TradeType& _type);
 
+	virtual bool ResumeItem(CTradeList* _pList , const FCTradeItem& _item);
 
 	virtual bool DoImportDepositTable(FCTradeLog* _pTbl);
 	virtual bool DoImportWithdrawTable(FCTradeLog* _pTbl);

@@ -282,6 +282,42 @@ void FCTradeLog::FCTradeItem::CalclatePayment(void)
 	this->SetPayment(paymentPrice);
 }
 
+//	
+bool FCTradeLog::FCTradeItem::ConvertDate(string& _result, const Sint32& _dateValue, const Sint32& _timeValue )
+{
+	_result = string();
+
+	if (_dateValue == 0 && _timeValue == 0)
+	{
+		return false;
+	}
+
+	const Sint32 dateValue = _dateValue;
+	CSysData prmDateYear((dateValue / 10000));			// 年
+	CSysData prmDateMonth((dateValue % 10000) / 100);	// 月
+	CSysData prmDateDay((dateValue % 100));				// 日
+
+	const Sint32 timeValue = _timeValue;
+	CSysData prmTimeHour((timeValue / 10000));			// 時
+	CSysData prmTimeMinutes((timeValue % 10000) / 100);	// 分
+	CSysData prmTimeSecond((timeValue % 100));			// 秒
+
+	{//	取引日時
+		_result += prmDateYear.GetAsStr();
+		_result += "-";
+		_result += prmDateMonth.GetAsStr();
+		_result += "-";
+		_result += prmDateDay.GetAsStr();
+		_result += " ";
+
+		_result += prmTimeHour.GetAsStr();
+		_result += ":";
+		_result += prmTimeMinutes.GetAsStr();
+		_result += ":";
+		_result += prmTimeSecond.GetAsStr();
+	}
+	return true;
+}
 
 
 
@@ -373,6 +409,27 @@ bool FCTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem::T
 FCTradeLog::CTradeList* FCTradeLog::GetTradeList(const FCTradeItem::TradeType& _type)
 {
 	return mTradeTable.GetParam(_type);
+}
+
+
+
+//	アイテムの連結を戻す
+bool FCTradeLog::ResumeItem(CTradeList* _pList, const FCTradeItem& _item)
+{
+	const Sint32 buyDate = _item.GetBuyDate();
+	const Sint32 buyTime = _item.GetBuyTime();
+
+	CTradeDate* pDate = _pList->GetParam(buyDate);
+	if (!pDate) {
+		return false;
+	}
+
+	CTradeArray* pExcAry = pDate->GetParam(buyTime);
+	if (!pExcAry) {
+		return false;
+	}
+	pExcAry->AddParam(_item);
+	return true;
 }
 
 

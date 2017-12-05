@@ -86,6 +86,18 @@ public:
 		mArray.push_back(_val);
 	}
 
+	//	‘O‚©‚ç’Ç‰Á‚·‚é
+	void PushParam(const _T& _val) {
+		CArray temp = mArray;
+		mArray = CArray();
+		mArray.push_back(_val);
+
+		CIte Ite = temp.begin();
+		for (; Ite != temp.end(); Ite++ ) {
+			AddParam(*Ite);
+		}
+	}
+
 	//	’l‚ğæ“¾‚·‚é
 	const _T GetParam(const Sint32& _index) {
 		CIte result = this->get(_index);

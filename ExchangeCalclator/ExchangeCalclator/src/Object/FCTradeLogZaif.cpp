@@ -203,7 +203,7 @@ void CZaifTradeLog::Dump(void)
 
 	OutputDebugStringA("-----------------------------------------------\n");
 	{//	ラベルの出力
-		string label = "マーケット,取引種別,価格,数量,手数料,合計数,コスト,決済額,損益,日時\n";
+		string label = "マーケット,取引種別,価格,数量,手数料,合計数,コスト,決済額,損益,日時,初取引日時\n";
 		stream += label;
 		OutputDebugStringA( label.c_str() );
 	}
@@ -217,15 +217,9 @@ void CZaifTradeLog::Dump(void)
 			CTradeArray::CIte IteAry = IteDate->second.begin();
 			for (; IteAry != IteDate->second.end(); IteAry++)
 			{
-				const Sint32 dateValue = IteAry->GetDate();
-				CSysData prmDateYear((dateValue / 10000) );			// 年
-				CSysData prmDateMonth((dateValue % 10000) / 100 );	// 月
-				CSysData prmDateDay((dateValue % 100));				// 日
-
-				const Sint32 timeValue = IteAry->GetTime();
-				CSysData prmTimeHour( (timeValue/10000));			// 時
-				CSysData prmTimeMinutes((timeValue%10000)/100);		// 分
-				CSysData prmTimeSecond((timeValue%100));			// 秒
+				string tradeDate,buyDate;
+				IteAry->ConvertDate(tradeDate, IteAry->GetDate(), IteAry->GetTime());
+				IteAry->ConvertDate(buyDate, IteAry->GetBuyDate(), IteAry->GetBuyTime());
 
 				CSysData prmPrice(IteAry->GetPrice());				// 取引価格
 				CSysData prmAmount(IteAry->GetAmount());			// 数量
@@ -282,20 +276,12 @@ void CZaifTradeLog::Dump(void)
 				line += prmMargin.GetAsStr();
 				line += ",";
 
-				{//	取引日時
-					line += prmDateYear.GetAsStr();
-					line += "-";
-					line += prmDateMonth.GetAsStr();
-					line += "-";
-					line += prmDateDay.GetAsStr();
-					line += " ";
+				//	取引日時
+				line += tradeDate.c_str();
+				line += ",";
 
-					line += prmTimeHour.GetAsStr();
-					line += ":";
-					line += prmTimeMinutes.GetAsStr();
-					line += ":";
-					line += prmTimeSecond.GetAsStr();
-				}
+				//	購入日時
+				line += buyDate.c_str();
 				line += ",";
 
 				line += "\n";
@@ -558,7 +544,7 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 		if (IteSrcDate == pSrcList->end())
 		{//	出金したことないけど、入金がある
 		//	他取引所などからの入金
-			pExcAry->AddParam(*pSellQueue);
+			this->ResumeItem(pDstList , *pSellQueue );
 			_pAry->AddParam(*pSellQueue);
 			break;
 		}
@@ -653,7 +639,8 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 			IteExcAry->SetAmount(nextAmount);
 		}
 
-		pExcAry->AddParam(tradeQueue);
+		this->ResumeItem(pDstList, tradeQueue);
+		//pExcAry->PushParam(tradeQueue);
 		if (_pAry) {
 			_pAry->AddParam(tradeQueue);
 		}
