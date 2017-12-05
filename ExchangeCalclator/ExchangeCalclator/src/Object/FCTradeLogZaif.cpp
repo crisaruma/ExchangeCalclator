@@ -357,6 +357,9 @@ void CZaifTradeLog::DoConvert(void)
 		newItem.SetAmount(pAmount->GetAsDbl());
 		newItem.SetDate(ConvertDate(pDate));
 		newItem.SetTime(ConVertTime(pDate));
+		newItem.SetBuyDate(newItem.GetDate());
+		newItem.SetBuyTime(newItem.GetTime());
+
 		newItem.SetFee(pFee->GetAsDbl());
 
 		//	日時単位の取引リストを取得
@@ -527,8 +530,8 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 
 	//	転送先のリストを取得する
 	CTradeList* pDstList = this->GetTradeList(_dst);
-	CTradeDate* pDstDate = pDstList->GetParam(_pTrade->GetDate());
-	CTradeArray* pExcAry = pDstDate->GetParam(_pTrade->GetTime());
+	//CTradeDate* pDstDate = pDstList->GetParam(_pTrade->GetDate());
+	//CTradeArray* pExcAry = pDstDate->GetParam(_pTrade->GetTime());
 
 	//	売りのキューを消化するまで、買いのキューを食いつぶす
 	FCTradeItem* pSellQueue = _pTrade;
@@ -589,11 +592,6 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 		const double buyPrice = buyQueue.GetPrice() * tradeAmount;
 		const double tradeMargin = 0;
 
-		if (_dst == FCTradeItem::TradeTypeBuy)
-		{//	購入リストに戻す場合
-			CTradeDate* pTempDate = pDstList->GetParam(buyQueue.GetBuyDate());
-			pExcAry = pTempDate->GetParam(buyQueue.GetBuyTime());
-		}
 		const double checkPrice = buyQueue.GetPrice();
 		if (checkPrice <= 0.000000001f)
 		{
@@ -605,9 +603,21 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 		tradeQueue.SetAmount(tradeAmount);
 		tradeQueue.SetMargin(0);
 		tradeQueue.SetFee(tradeQueue.GetFee());
-		tradeQueue.SetBuyDate(buyQueue.GetDate());
-		tradeQueue.SetBuyTime(buyQueue.GetTime());
 		tradeQueue.SetTransAmount(transAmount);
+
+		switch (pSellQueue->GetType())
+		{
+			case FCTradeItem::TradeTypeWithdraw:
+			{//	送金時のみ、タイムスタンプを更新する
+				tradeQueue.SetBuyDate(buyQueue.GetDate());
+				tradeQueue.SetBuyTime(buyQueue.GetTime());
+			}	break;
+			default:
+			{
+				tradeQueue.SetBuyDate(buyQueue.GetDate());
+				tradeQueue.SetBuyTime(buyQueue.GetTime());
+			}	break;
+		}
 
 
 		if (0.000000001f < pSellQueue->GetAmount())
@@ -639,7 +649,16 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 			IteExcAry->SetAmount(nextAmount);
 		}
 
-		this->ResumeItem(pDstList, tradeQueue);
+		if (_dst == FCTradeItem::TradeTypeBuy)
+		{//	購入リストに戻す場合
+			//CTradeDate* pTempDate = pDstList->GetParam(buyQueue.GetBuyDate());
+			//pExcAry = pTempDate->GetParam(buyQueue.GetBuyTime());
+			this->ResumeItem(pDstList, buyQueue);
+		}
+		else
+		{//	プールに送金する場合
+			this->ResumeItem(pDstList, tradeQueue);
+		}
 		//pExcAry->PushParam(tradeQueue);
 		if (_pAry) {
 			_pAry->AddParam(tradeQueue);
