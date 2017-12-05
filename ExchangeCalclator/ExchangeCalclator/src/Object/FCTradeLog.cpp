@@ -165,6 +165,18 @@ const double FCTradeLog::FCTradeItem::GetPrice(const CSysDataMap* _pItem ) const
 	return this->GetParamAsDbl(this->TypeHash_Price(), _pItem);
 }
 
+//	ŒˆÏ‰¿Ši‚ÌÝ’è/Žæ“¾
+void FCTradeLog::FCTradeItem::SetPayment(const double& _price, CSysDataMap* _pItem )
+{
+	this->SetParamAsDbl(this->TypeHash_PaymentPrice(), _price, _pItem);
+}
+
+const double FCTradeLog::FCTradeItem::GetPayment(const CSysDataMap* _pItem ) const 
+{
+	return this->GetParamAsDbl(this->TypeHash_PaymentPrice(), _pItem);
+}
+
+
 //	w“üŽž‚Ì‰¿Ši‚ÌÝ’è/Žæ“¾
 void FCTradeLog::FCTradeItem::SetCost(const double& _price, CSysDataMap* _pItem ) 
 {
@@ -261,6 +273,16 @@ const Sint32 FCTradeLog::FCTradeItem::GetBuyTime(const CSysDataMap* _pItem ) con
 }
 
 
+//	ŒˆÏŠz‚ðŒvŽZ‚·‚é
+void FCTradeLog::FCTradeItem::CalclatePayment(void)
+{
+	const double price = this->GetPrice();
+	const double amount = this->GetAmount();
+	const double paymentPrice = price * amount;
+	this->SetPayment(paymentPrice);
+}
+
+
 
 
 //====================================================================================
@@ -353,6 +375,18 @@ FCTradeLog::CTradeList* FCTradeLog::GetTradeList(const FCTradeItem::TradeType& _
 	return mTradeTable.GetParam(_type);
 }
 
+
+//	
+bool FCTradeLog::DoImportDepositTable(FCTradeLog* _pTbl)
+{
+	return true;
+}
+
+//	
+bool FCTradeLog::DoImportWithdrawTable(FCTradeLog* _pTbl)
+{
+	return true;
+}
 
 
 

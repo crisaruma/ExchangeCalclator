@@ -6,7 +6,17 @@
 #include <fstream>
 #include <Windows.h>
 
+/*
 
+-zaif $(USERPROFILE)\Assets\logZaif[btc].csv,$(USERPROFILE)\Assets\logZaif[eth].csv,$(USERPROFILE)\Assets\logZaif[zaif].csv
+-zaifbtcdeposit $(USERPROFILE)\Assets\logZaifdepo[btc].csv
+-zaifbtcwithdraw $(USERPROFILE)\Assets\btc_withdraw.csv
+
+-zaif $(USERPROFILE)\Assets\logZaif[zaif].csv
+-zaif $(USERPROFILE)\Assets\logZaif[eth].csv -zaifbtcwithdraw $(USERPROFILE)\Assets\logZaifdraw[eth].csv
+-zaif $(USERPROFILE)\Assets\logZaif[btc].csv -zaifbtcdeposit $(USERPROFILE)\Assets\logZaifdepo[btc].csv -zaifbtcwithdraw $(USERPROFILE)\Assets\logZaifdraw[btc].csv
+
+*/
 
 
 
@@ -98,25 +108,25 @@ const Sint32 CZaifBase::ConVertTime(const CSysData* _pDateTime)
 
 //============================================================================================================
 //	ザイフの入金履歴解析
-CZaifDepositLog::CZaifDepositLog()
+CZaifBtcDepositLog::CZaifBtcDepositLog()
 : FClsBase(this)
 {
 }
 
-CZaifDepositLog::CZaifDepositLog(FCTradeLog* _pInst)
+CZaifBtcDepositLog::CZaifBtcDepositLog(FCTradeLog* _pInst)
 : FClsBase(_pInst)
 {
 }
 
-CZaifDepositLog::~CZaifDepositLog(){
+CZaifBtcDepositLog::~CZaifBtcDepositLog(){
 	Finalize();
 }
 
-void CZaifDepositLog::Initialize(void){
+void CZaifBtcDepositLog::Initialize(void){
 	FClsBase::Initialize();
 }
 
-void CZaifDepositLog::Finalize(void){
+void CZaifBtcDepositLog::Finalize(void){
 	FClsBase::Finalize();
 }
 
@@ -125,27 +135,27 @@ void CZaifDepositLog::Finalize(void){
 
 //============================================================================================================
 //	ザイフの出金履歴解析
-CZaifWithdrawLog::CZaifWithdrawLog()
+CZaifBtcWithdrawLog::CZaifBtcWithdrawLog()
 : FClsBase(this)
 {
 }
 
-CZaifWithdrawLog::CZaifWithdrawLog(FCTradeLog* _pInst)
+CZaifBtcWithdrawLog::CZaifBtcWithdrawLog(FCTradeLog* _pInst)
 : FClsBase(_pInst)
 {
 }
 
-CZaifWithdrawLog::~CZaifWithdrawLog()
+CZaifBtcWithdrawLog::~CZaifBtcWithdrawLog()
 {
 	Finalize();
 }
 
-void CZaifWithdrawLog::Initialize(void)
+void CZaifBtcWithdrawLog::Initialize(void)
 {
 	FClsBase::Initialize();
 }
 
-void CZaifWithdrawLog::Finalize(void)
+void CZaifBtcWithdrawLog::Finalize(void)
 {
 	FClsBase::Finalize();
 }
@@ -193,7 +203,7 @@ void CZaifTradeLog::Dump(void)
 
 	OutputDebugStringA("-----------------------------------------------\n");
 	{//	ラベルの出力
-		string label = "マーケット,取引種別,価格,数量,合計数,手数料,コスト,損益,日時\n";
+		string label = "マーケット,取引種別,価格,数量,手数料,合計数,コスト,決済額,損益,日時\n";
 		stream += label;
 		OutputDebugStringA( label.c_str() );
 	}
@@ -222,6 +232,7 @@ void CZaifTradeLog::Dump(void)
 				CSysData prmTransAmount(IteAry->GetTransAmount());	// 転送総数
 				CSysData prmFee(IteAry->GetFee());					// 手数料
 				CSysData prmCost(IteAry->GetCost());				// コスト
+				CSysData prmPayment(IteAry->GetPayment());			//決済額
 				CSysData prmMargin(IteAry->GetMargin());			// 損益
 
 				string line = "";
@@ -229,11 +240,12 @@ void CZaifTradeLog::Dump(void)
 				line += IteAry->GetMarket();					//	マーケット
 				line += ",";
 
+				string typeTrade,typePayment;
 				switch (IteAry->GetType()) {
-					case FCTradeItem::TradeTypeBuy		: {	line += "買い";}	break;
-					case FCTradeItem::TradeTypeSell		: {	line += "売り";}	break;
-					case FCTradeItem::TradeTypeDeposit	: { line += "入金";}	break;
-					case FCTradeItem::TradeTypeWithdraw	: { line += "送金";}	break;
+					case FCTradeItem::TradeTypeBuy		: {	line += "買い"; typeTrade = "+"; typePayment = "-"; }	break;
+					case FCTradeItem::TradeTypeSell		: {	line += "売り"; typeTrade = "-"; typePayment = "+"; }	break;
+					case FCTradeItem::TradeTypeDeposit	: { line += "入金"; typeTrade = "+"; typePayment = "-"; }	break;
+					case FCTradeItem::TradeTypeWithdraw	: { line += "送金"; typeTrade = "-"; typePayment = "+"; }	break;
 				}
 				line += ",";
 
@@ -242,20 +254,29 @@ void CZaifTradeLog::Dump(void)
 				line += ",";
 
 				//	数量
+				line += typeTrade;
 				line += prmAmount.GetAsStr();
 				line += ",";
 
-				//	合計数
-				line += prmTransAmount.GetAsStr();
+				//	手数料
+				line += typeTrade;
+				line += prmFee.GetAsStr();
 				line += ",";
 
-				//	手数料
-				line += prmFee.GetAsStr();
+				//	合計数
+				line += typeTrade;
+				line += prmTransAmount.GetAsStr();
 				line += ",";
 
 				//	コスト
 				line += prmCost.GetAsStr();
 				line += ",";
+
+				//	決済額
+				line += typePayment;
+				line += prmPayment.GetAsStr();
+				line += ",";
+				
 
 				//	損益
 				line += prmMargin.GetAsStr();
@@ -300,8 +321,8 @@ void CZaifTradeLog::Dump(void)
 //	CSVテーブルを買い/売りのリストにコンバートする
 void CZaifTradeLog::DoConvert(void)
 {
-	this->DoImportWithdrawTable( FCTradeLogManager::GetInstance()->GetTradeLog("CZaifWithdrawLog"));
-	this->DoImportDepositTable( FCTradeLogManager::GetInstance()->GetTradeLog("CZaifDepositLog"));
+	this->DoImportBtcWithdrawTable( FCTradeLogManager::GetInstance()->GetTradeLog("CZaifBtcWithdrawLog"));
+	this->DoImportBtcDepositTable( FCTradeLogManager::GetInstance()->GetTradeLog("CZaifBtcDepositLog"));
 
 	mTradeTable.Initialize();
 
@@ -399,6 +420,7 @@ bool CZaifTradeLog::DoCalclate(void)
 				{
 					case FCTradeItem::TradeTypeBuy:
 					{//	買い
+						IteAllAry->CalclatePayment();
 						pExcAry->AddParam( *IteAllAry );
 					}	break;
 
@@ -478,6 +500,7 @@ bool CZaifTradeLog::DoCalclate(void)
 							tradeQueue.SetAmount(tradeAmount);
 							tradeQueue.SetCost(buyQueue.GetPrice());
 							tradeQueue.SetMargin(tradeMargin);
+							tradeQueue.SetPayment(sellPrice);
 
 							pExcAry->AddParam( tradeQueue );
 						}
@@ -525,14 +548,17 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 	FCTradeItem* pSellQueue = _pTrade;
 	double fee = _pTrade->GetFee();
 	double transAmount = 0.0f;
+	double preAmount = pSellQueue->GetAmount();
 	while (0.0f < pSellQueue->GetAmount())
 	{
+		FCTradeItem tradeQueue = *pSellQueue;
 
 		//	一番古い購入キューを取得する
 		CTradeList::CIte IteSrcDate = pSrcList->begin();
 		if (IteSrcDate == pSrcList->end())
 		{//	出金したことないけど、入金がある
 		//	他取引所などからの入金
+			pExcAry->AddParam(*pSellQueue);
 			_pAry->AddParam(*pSellQueue);
 			break;
 		}
@@ -552,7 +578,6 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 		}
 
 		FCTradeItem buyQueue = *IteExcAry;
-		FCTradeItem tradeQueue = *pSellQueue;
 
 		//	売却差数を計算
 		double tradeAmount = 0.0f;
@@ -582,6 +607,11 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 		{//	購入リストに戻す場合
 			CTradeDate* pTempDate = pDstList->GetParam(buyQueue.GetBuyDate());
 			pExcAry = pTempDate->GetParam(buyQueue.GetBuyTime());
+		}
+		const double checkPrice = buyQueue.GetPrice();
+		if (checkPrice <= 0.000000001f)
+		{
+			tradeQueue.SetPrice(buyQueue.GetPrice());
 		}
 
 		tradeQueue.SetPrice(buyQueue.GetPrice());
@@ -637,7 +667,7 @@ bool CZaifTradeLog::DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem
 
 
 //	入金ログを取り込み
-bool CZaifTradeLog::DoImportDepositTable(FCTradeLog* _pTbl)
+bool CZaifTradeLog::DoImportBtcDepositTable(FCTradeLog* _pTbl)
 {
 //	日時:2017-11-30 05:28:15.552586
 //	TX: 0e35407b9e3d72e1d38daeef803db0cf31956656ac11290a9a9d471fc9b62530
@@ -655,8 +685,8 @@ bool CZaifTradeLog::DoImportDepositTable(FCTradeLog* _pTbl)
 
 		if (this->CreateRecord())
 		{
-			this->SetParam("日時", ConvertDate(pDate));
-			this->SetParam("価格", *pPrice);
+			this->SetParam("日時", *pDate );
+			this->SetParam("数量", *pPrice);
 			this->SetParam("取引種別", typeDeposit );
 		}
 	}
@@ -665,7 +695,7 @@ bool CZaifTradeLog::DoImportDepositTable(FCTradeLog* _pTbl)
 
 
 //	出金ログを取り込み
-bool CZaifTradeLog::DoImportWithdrawTable(FCTradeLog* _pTbl)
+bool CZaifTradeLog::DoImportBtcWithdrawTable(FCTradeLog* _pTbl)
 {
 	//	日時:2017-11-30 05:28:15.552586
 	//	TX: 0e35407b9e3d72e1d38daeef803db0cf31956656ac11290a9a9d471fc9b62530
@@ -684,14 +714,12 @@ bool CZaifTradeLog::DoImportWithdrawTable(FCTradeLog* _pTbl)
 
 		if (this->CreateRecord())
 		{
-			this->SetParam("日時", ConvertDate(pDate));
-			this->SetParam("価格", *pPrice);
+			this->SetParam("日時", *pDate);
+			this->SetParam("数量", *pPrice);
 			this->SetParam("取引種別", typeDeposit);
 			this->SetParam("取引手数料", *pTxFee );
 		}
 	}
 	return true;
 }
-
-
 

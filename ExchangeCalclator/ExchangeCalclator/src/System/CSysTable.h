@@ -32,6 +32,11 @@ public:
 
 			CSysData* GetField(const Sint32& _index);
 			const CSysData* GetField(const Sint32& _index) const ;
+
+			inline const Sint32 count(void) { return mParam.count(); }
+
+			inline CSysDataMap& GetParam(void) { return mParam; }
+			inline const CSysDataMap& GetParam(void) const { return mParam; }
 	};
 
 
@@ -65,10 +70,14 @@ public:
 
 	const Sint32 GetFieldIndex(const char* _pFieldName);
 	const char* GetFieldName(const Sint32& _FieldIndex);
+	const CRecord& GetFieldTable(void) { return mLabel;  }
 
 	CRecord* CreateRecord(void);
 	CRecord* GetRecord(void);
 	const CRecord* GetRecord(void) const;
+
+	const bool AddLabel(const char* _pFieldName);
+	const bool AddParam(const char* _pFieldName, const CSysData& _dat);
 
 	//	
 	const bool SetParam(const char* _pFieldName, const CSysData& _dat);
@@ -76,6 +85,12 @@ public:
 
 	const CSysData* GetParam(const char* _pFieldName);
 	const CSysData* GetParam(const Sint32& _FieldIndex);
+
+	//	自身のテーブルに渡されたテーブルを取り込む
+	virtual bool DoIntegration(CSysTable* _pTbl);
+
+	//	渡されたテーブルに自信のテーブルを統合する
+	virtual bool DoClone(CSysTable* _pTbl);
 
 };
 

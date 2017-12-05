@@ -17,16 +17,16 @@ int main(int argc, char *argv[])
 
 	CArg* pInst = CArg::GetInstance();
 
-	CZaifWithdrawLog::Create();
-	CZaifDepositLog::Create();
+	CZaifBtcWithdrawLog::Create();
+	CZaifBtcDepositLog::Create();
 	CZaifTradeLog::Create();
 
 	FCTradeLogManager* pLogMngr = FCTradeLogManager::GetInstance();
 	pLogMngr->DoInit();
 
-	pLogMngr->DoLoad(pInst->GetArg("-zaifdraw"));	// o‹à—š—ð
-	pLogMngr->DoLoad(pInst->GetArg("-zaifdepo"));	// “ü‹à—š—ð
-	pLogMngr->DoLoad(pInst->GetArg("-zaif"));		// Žæˆø—š—ð
+	pLogMngr->DoLoad(pInst->GetArg("-zaifbtcwithdraw"));	// o‹à—š—ð
+	pLogMngr->DoLoad(pInst->GetArg("-zaifbtcdeposit"));	// “ü‹à—š—ð
+	pLogMngr->DoLoad(pInst->GetArg("-zaif"));			// Žæˆø—š—ð
 
 	pLogMngr->DoConvert();
 	pLogMngr->DoCalclate();

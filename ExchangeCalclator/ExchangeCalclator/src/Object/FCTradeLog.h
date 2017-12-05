@@ -46,19 +46,20 @@ public:
 			void Initialize(void);
 			void Finalize(void);
 
-			inline const Sint32 TypeHash_Type(void) const { return CHash::CRC32("Type"); }
-			inline const Sint32 TypeHash_Currency(void) const { return CHash::CRC32("Currency"); }
-			inline const Sint32 TypeHash_Price(void) const { return CHash::CRC32("Price"); }
-			inline const Sint32 TypeHash_Amount(void) const { return CHash::CRC32("Amount"); }
-			inline const Sint32 TypeHash_TransAmount(void) const { return CHash::CRC32("TransAmount"); }	// “üo‹à”
-			inline const Sint32 TypeHash_Date(void) const { return CHash::CRC32("Date"); }
-			inline const Sint32 TypeHash_Time(void) const { return CHash::CRC32("Time"); }
-			inline const Sint32 TypeHash_BuyDate(void) const { return CHash::CRC32("BuyDate"); }	// w“ü“ú
-			inline const Sint32 TypeHash_BuyTime(void) const { return CHash::CRC32("BuyTime"); }	//
-			inline const Sint32 TypeHash_BuyPrice(void) const { return CHash::CRC32("CostPrice"); }	// w“ü‰¿Ši
-			inline const Sint32 TypeHash_Margin(void) const { return CHash::CRC32("Margin"); }		// æˆø·‰v
-			inline const Sint32 TypeHash_Market(void) const { return CHash::CRC32("Market"); }
-			inline const Sint32 TypeHash_Fee(void) const { return CHash::CRC32("Fee"); }
+			inline const Sint32 TypeHash_Market(void) const { return CHash::CRC32("Market"); }				//	ƒ}[ƒPƒbƒg
+			inline const Sint32 TypeHash_Type(void) const { return CHash::CRC32("Type"); }					//	æˆøí•Ê
+			inline const Sint32 TypeHash_Currency(void) const { return CHash::CRC32("Currency"); }			//	’Ê‰İ
+			inline const Sint32 TypeHash_Price(void) const { return CHash::CRC32("Price"); }				//	‰¿Ši
+			inline const Sint32 TypeHash_PaymentPrice(void) const { return CHash::CRC32("PaymentPrice"); }	//	ŒˆÏŠz
+			inline const Sint32 TypeHash_BuyPrice(void) const { return CHash::CRC32("CostPrice"); }			//	w“ü‰¿Ši
+			inline const Sint32 TypeHash_Amount(void) const { return CHash::CRC32("Amount"); }				//	”—Ê
+			inline const Sint32 TypeHash_TransAmount(void) const { return CHash::CRC32("TransAmount"); }	//	“üo‹à”
+			inline const Sint32 TypeHash_Date(void) const { return CHash::CRC32("Date"); }					//	æˆø“ú
+			inline const Sint32 TypeHash_Time(void) const { return CHash::CRC32("Time"); }					//	æˆø
+			inline const Sint32 TypeHash_BuyDate(void) const { return CHash::CRC32("BuyDate"); }			//	w“ü“ú
+			inline const Sint32 TypeHash_BuyTime(void) const { return CHash::CRC32("BuyTime"); }			//	w“ü
+			inline const Sint32 TypeHash_Margin(void) const { return CHash::CRC32("Margin"); }				//	æˆø·‰v
+			inline const Sint32 TypeHash_Fee(void) const { return CHash::CRC32("Fee"); }					//	è”—¿
 
 			void SetParamAsStr(const Sint32& _hash, const char* _pStr , CSysDataMap* _pItem = NULL);
 			const char* GetParamAsStr(const Sint32& _hash, const CSysDataMap* _pItem = NULL) const;
@@ -84,6 +85,10 @@ public:
 			//	ƒgƒŒ[ƒh‰¿Ši‚Ìİ’è/æ“¾
 			void SetPrice(const double& _price, CSysDataMap* _pItem = NULL);
 			const double GetPrice(const CSysDataMap* _pItem = NULL) const ;
+
+			//	ŒˆÏ‰¿Ši‚Ìİ’è/æ“¾
+			void SetPayment(const double& _price, CSysDataMap* _pItem = NULL);
+			const double GetPayment(const CSysDataMap* _pItem = NULL) const;
 
 			//	w“ü‚Ì‰¿Ši‚Ìİ’è/æ“¾
 			void SetCost(const double& _price, CSysDataMap* _pItem = NULL);
@@ -121,7 +126,8 @@ public:
 			void SetBuyTime(const Sint32& _time, CSysDataMap* _pItem = NULL);
 			const Sint32 GetBuyTime(const CSysDataMap* _pItem = NULL) const;
 
-
+			//	ŒˆÏŠz‚ğŒvZ‚·‚é
+			void CalclatePayment(void);
 	};
 
 	typedef CSysArray<FCTradeItem>						CTradeArray;
@@ -165,6 +171,11 @@ public:
 	virtual bool DoSwap(const FCTradeItem::TradeType& _src , const FCTradeItem::TradeType& _dst , FCTradeItem* _pTrade , CTradeArray* _pAry );
 
 	virtual CTradeList* GetTradeList(const FCTradeItem::TradeType& _type);
+
+
+	virtual bool DoImportDepositTable(FCTradeLog* _pTbl);
+	virtual bool DoImportWithdrawTable(FCTradeLog* _pTbl);
+
 
 };
 

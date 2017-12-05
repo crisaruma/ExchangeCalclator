@@ -46,6 +46,9 @@
     <ClInclude Include="src\Object\FCTradeLogZaif.h">
       <Filter>Src\Object</Filter>
     </ClInclude>
+    <ClInclude Include="src\Object\FCTradeLogGeneral.h">
+      <Filter>Src\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ExchangeCalclator.cpp">
@@ -70,6 +73,9 @@
       <Filter>Src\Object</Filter>
     </ClCompile>
     <ClCompile Include="src\Object\FCTradeLogZaif.cpp">
+      <Filter>Src\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Object\FCTradeLogGeneral.cpp">
       <Filter>Src\Object</Filter>
     </ClCompile>
   </ItemGroup>

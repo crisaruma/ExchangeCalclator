@@ -34,55 +34,55 @@ public:
 
 //============================================================================================================
 //	ザイフの入金履歴解析
-class CZaifDepositLog : public CZaifBase 
+class CZaifBtcDepositLog : public CZaifBase 
 {
 public:
 	typedef CZaifBase	FClsBase;
 
 protected:
 public:
-	static CZaifDepositLog* Create(void) {
-		CZaifDepositLog* pInst = new CZaifDepositLog();
+	static CZaifBtcDepositLog* Create(void) {
+		CZaifBtcDepositLog* pInst = new CZaifBtcDepositLog();
 		pInst->RegistManager();
 		return pInst;
 	}
 
-	CZaifDepositLog();
-	CZaifDepositLog(FCTradeLog* _pInst);
-	virtual ~CZaifDepositLog();
+	CZaifBtcDepositLog();
+	CZaifBtcDepositLog(FCTradeLog* _pInst);
+	virtual ~CZaifBtcDepositLog();
 
 	virtual void Initialize(void);
 	virtual void Finalize(void);
 
-	virtual const char* GetOptionWord(void) { return "-zaifdepo"; }
-	virtual const char* GetRegistKey(void) { return "CZaifDepositLog";  }
+	virtual const char* GetOptionWord(void) { return "-zaifbtcdeposit"; }
+	virtual const char* GetRegistKey(void) { return "CZaifBtcDepositLog";  }
 };
 
 
 //============================================================================================================
 //	ザイフの出金履歴解析
-class CZaifWithdrawLog : public CZaifBase
+class CZaifBtcWithdrawLog : public CZaifBase
 {
 public:
 	typedef CZaifBase	FClsBase;
 
 protected:
 public:
-	static CZaifWithdrawLog* Create(void) {
-		CZaifWithdrawLog* pInst = new CZaifWithdrawLog();
+	static CZaifBtcWithdrawLog* Create(void) {
+		CZaifBtcWithdrawLog* pInst = new CZaifBtcWithdrawLog();
 		pInst->RegistManager();
 		return pInst;
 	}
 
-	CZaifWithdrawLog();
-	CZaifWithdrawLog(FCTradeLog* _pInst);
-	virtual ~CZaifWithdrawLog();
+	CZaifBtcWithdrawLog();
+	CZaifBtcWithdrawLog(FCTradeLog* _pInst);
+	virtual ~CZaifBtcWithdrawLog();
 
 	virtual void Initialize(void);
 	virtual void Finalize(void);
 
-	virtual const char* GetOptionWord(void) { return "-zaifdraw"; }
-	virtual const char* GetRegistKey(void) { return "CZaifWithdrawLog"; }
+	virtual const char* GetOptionWord(void) { return "-zaifbtcwithdraw"; }
+	virtual const char* GetRegistKey(void) { return "CZaifBtcWithdrawLog"; }
 };
 
 
@@ -122,8 +122,8 @@ public:
 
 	virtual bool DoSwap(const FCTradeItem::TradeType& _src, const FCTradeItem::TradeType& _dst, FCTradeItem* _pTrade, CTradeArray* _pAry);
 
-	virtual bool DoImportDepositTable(FCTradeLog* _pTbl);
-	virtual bool DoImportWithdrawTable(FCTradeLog* _pTbl);
+	virtual bool DoImportBtcDepositTable(FCTradeLog* _pTbl);
+	virtual bool DoImportBtcWithdrawTable(FCTradeLog* _pTbl);
 
 };
 

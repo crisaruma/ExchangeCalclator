@@ -276,6 +276,24 @@ const CSysTable::CRecord* CSysTable::GetRecord(void) const
 	return &(mCurrent->second);
 }
 
+
+//	
+const bool CSysTable::AddParam(const char* _pFieldName, const CSysData& _dat) 
+{
+	const Sint32 hashKey = CHash::CRC32(_pFieldName);
+	Sint32* pIndex = mIndex.SearchParam(hashKey);
+	if (!pIndex) 
+	{//	レコードを作成する
+		const Sint32 newFldIndex = mLabel.count();
+
+		mLabel.AddParam(_pFieldName);			//	カラム名を追加
+		mIndex.AddParam(hashKey, newFldIndex);	//	追加したフィールドインデックスを取得
+		pIndex = mIndex.SearchParam(hashKey);	//	追加したフィールドを検索
+	}
+	return this->SetParam(*pIndex, _dat);
+}
+
+
 //	フィールドパラメータの設定
 const bool CSysTable::SetParam(const char* _pFieldName, const CSysData& _dat)
 {
@@ -314,4 +332,60 @@ const CSysData* CSysTable::GetParam(const Sint32& _FieldIndex)
 		return NULL;
 	}
 	return mCurrent->second.GetField(_FieldIndex);
+}
+
+
+
+//	自身のテーブルに渡されたテーブルを取り込む
+bool CSysTable::DoIntegration(CSysTable* _pTbl)
+{
+	const CRecord& fldTable = _pTbl->GetFieldTable();
+	const CSysDataMap& labelPrm = fldTable.GetParam();
+
+	for (_pTbl->First(); !_pTbl->IsEof(); _pTbl->Next())
+	{
+		CSysTable::CRecord* pRecord = _pTbl->GetRecord();
+		this->CreateRecord();
+
+		CSysDataMap::CIteConst IteLabel = labelPrm.begin();
+		for (; IteLabel != labelPrm.end(); IteLabel++)
+		{
+			const Sint32 fldIndexSrc = IteLabel->first;
+			const char* fldNameSrc = IteLabel->second.GetAsStr();
+			const CSysData* pFldItem = pRecord->GetField(fldIndexSrc);
+			if (!pFldItem) {
+				continue;
+			}
+			this->AddParam(fldNameSrc , *pFldItem );
+		}
+	}
+
+	return true;
+}
+
+
+//	渡されたテーブルに自信のテーブルを統合する
+bool CSysTable::DoClone(CSysTable* _pTbl)
+{
+	const CRecord& fldTable = this->GetFieldTable();
+	const CSysDataMap& labelPrm = fldTable.GetParam();
+
+	for (this->First(); !this->IsEof(); this->Next())
+	{
+		CSysTable::CRecord* pRecord = this->GetRecord();
+		_pTbl->CreateRecord();
+
+		CSysDataMap::CIteConst IteLabel = labelPrm.begin();
+		for (; IteLabel != labelPrm.end(); IteLabel++)
+		{
+			const Sint32 fldIndexSrc = IteLabel->first;
+			const char* fldNameSrc = IteLabel->second.GetAsStr();
+			const CSysData* pFldItem = pRecord->GetField(fldIndexSrc);
+			if (!pFldItem) {
+				continue;
+			}
+			_pTbl->AddParam(fldNameSrc, *pFldItem);
+		}
+	}
+	return true;
 }

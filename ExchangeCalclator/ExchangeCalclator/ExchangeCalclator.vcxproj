@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Object\FCTradeLog.h" />
+    <ClInclude Include="src\Object\FCTradeLogGeneral.h" />
     <ClInclude Include="src\Object\FCTradeLogZaif.h" />
     <ClInclude Include="src\System\CSysArray.h" />
     <ClInclude Include="src\System\CSysData.h" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="ExchangeCalclator.cpp" />
     <ClCompile Include="src\Object\FCTradeLog.cpp" />
+    <ClCompile Include="src\Object\FCTradeLogGeneral.cpp" />
     <ClCompile Include="src\Object\FCTradeLogZaif.cpp" />
     <ClCompile Include="src\System\CSysArray.cpp" />
     <ClCompile Include="src\System\CSysData.cpp" />
